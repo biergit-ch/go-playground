@@ -17,15 +17,13 @@ src: http://goinbigdata.com/golang-pass-by-pointer-vs-pass-by-value/
 
 */
 
-
 func BaseCall() int {
 	return 1
 }
 
-func WithArguments(a int, b int) int  {
- return a + b
+func WithArguments(a int, b int) int {
+	return a + b
 }
-
 
 /**
 method with multiple return commands

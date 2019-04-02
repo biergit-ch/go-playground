@@ -7,13 +7,12 @@ links:
 - https://hackernoon.com/basics-of-golang-for-beginners-6bd9b40d79ae
  */
 
-
 func TestForLoop(c int) {
 
 	persons := [3]string{"jan", "colin", "sarah"}
 
 	for i := 0; i < len(persons); i++ {
-		fmt.Println("Loop[", i,"]:", persons[i])
+		fmt.Println("Loop[", i, "]:", persons[i])
 	}
 
 }

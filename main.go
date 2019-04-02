@@ -30,10 +30,11 @@ func main() {
 	fmt.Println("Multiple Return:", a, b)
 
 	// crate an instance of Person
-	person := operations.Person {
+	person := operations.Person{
 		FirstName: "Jan",
-		LastName: "Minder",
-		Age: 25,
+		LastName:  "Minder",
+		Age:       25,
+		Addresses: rest.GetAddresses(),
 	}
 
 	// pass the reference of the person option
@@ -44,4 +45,3 @@ func main() {
 	// Start REST Webserver
 	rest.StartRestServer(8000)
 }
-
