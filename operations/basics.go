@@ -2,6 +2,7 @@ package operations
 
 import "fmt"
 
+
 func TestForLoop(c int) {
 
 	persons := [3] string{"jan", "colin", "sarah"}
