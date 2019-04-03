@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"git.skydevelopment.ch/zrh-dev/go-basics/operations"
 	"git.skydevelopment.ch/zrh-dev/go-basics/rest"
+	"git.skydevelopment.ch/zrh-dev/go-basics/persistence"
 )
 
 // define array and initialize it with values
@@ -42,6 +43,13 @@ func main() {
 
 	fmt.Println("Person from Main Context:", person)
 
+	// Initialize Database
+	persistence.SetupDatabase()
+
 	// Start REST Webserver
 	rest.StartRestServer(8000)
+
 }
+
+
+
