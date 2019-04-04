@@ -2,7 +2,7 @@ package controller
 
 import (
 	"encoding/json"
-	"git.skydevelopment.ch/zrh-dev/go-basics/repository/dao"
+	"git.skydevelopment.ch/zrh-dev/go-basics/dao"
 	"net/http"
 )
 

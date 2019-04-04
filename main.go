@@ -5,7 +5,7 @@ import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/http"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"git.skydevelopment.ch/zrh-dev/go-basics/operations"
-	"git.skydevelopment.ch/zrh-dev/go-basics/repository/dao"
+	"git.skydevelopment.ch/zrh-dev/go-basics/dao"
 )
 
 // define array and initialize it with values
