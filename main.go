@@ -2,15 +2,47 @@ package main
 
 import (
 	"fmt"
+	"git.skydevelopment.ch/zrh-dev/go-basics/http"
+	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"git.skydevelopment.ch/zrh-dev/go-basics/operations"
-	"git.skydevelopment.ch/zrh-dev/go-basics/rest"
-	"git.skydevelopment.ch/zrh-dev/go-basics/persistence"
+	"git.skydevelopment.ch/zrh-dev/go-basics/repository/dao"
 )
 
 // define array and initialize it with values
 var persons = []string{"jan", "colin", "sarah"}
 
 func main() {
+
+	// Test basic concepts
+	BasicPrinciples()
+
+	// crate an instance of Person
+	user := models.User{
+		FirstName: "Bier",
+		LastName:  "Git",
+	}
+
+	// pass the reference of the person option
+	operations.WithReferenceArguemnt(&user)
+
+	fmt.Println("Person from Main Context:", user)
+
+	// Setup a mysql database connection
+	SetupDatabase()
+
+	// Start REST Webserver
+	http.StartRestServer(8000)
+}
+
+/**
+Test Basic GO Principles
+
+- Arrays
+- Slices
+- Loops
+
+ */
+func BasicPrinciples() {
 
 	// define value
 	c := 15
@@ -29,27 +61,16 @@ func main() {
 
 	var a, b int = operations.WithMultipleReturnValues(1, 2)
 	fmt.Println("Multiple Return:", a, b)
-
-	// crate an instance of Person
-	person := operations.Person{
-		FirstName: "Jan",
-		LastName:  "Minder",
-		Age:       25,
-		Addresses: rest.GetAddresses(),
-	}
-
-	// pass the reference of the person option
-	operations.WithReferenceArguemnt(&person)
-
-	fmt.Println("Person from Main Context:", person)
-
-	// Initialize Database
-	persistence.SetupDatabase()
-
-	// Start REST Webserver
-	rest.StartRestServer(8000)
-
 }
 
+//TODO: Close Database Connection!
+func SetupDatabase() {
+
+	// Initialize Database
+	dao.InitDB()
+
+	// Add some Mock Data
+	dao.AddMockData()
+}
 
 

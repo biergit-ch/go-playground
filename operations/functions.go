@@ -1,11 +1,14 @@
 package operations
 
-import "fmt"
+import (
+	"fmt"
+	"git.skydevelopment.ch/zrh-dev/go-basics/models"
+)
 
 /*
 
 Passing Reference or a copy of the variable ?
-
+=============================================
 Even though Go looks a bit like C, its compiler works differently. And C
 analogy does not always work with Go. Passing by value in Go may be significantly
 cheaper than passing by pointer. This happens because Go uses escape analysis to determine
@@ -32,7 +35,7 @@ func WithMultipleReturnValues(a int, b int) (int, int) {
 	return a * 5, b * 4
 }
 
-func WithReferenceArguemnt(person *Person) {
-	fmt.Println("Print Person Value from reference", person)
-	person.FirstName = "manipulated from function jan"
+func WithReferenceArguemnt(user *models.User) {
+	fmt.Println("Print user Value from reference", user)
+	user.FirstName = "manipulated from function jan"
 }
