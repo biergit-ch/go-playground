@@ -11,10 +11,11 @@ go get github.com/jinzhu/gorm/dialects/mysql // mysql dialect
 
 ### Run
 ```
-go build
-./go-basics
+$ docker-compose up 
+$ go build && ./go-basics
 
-navigate to: http://localhost:8000/persons
+navigate to: http://localhost:8000/
+navigate to: http://localhost:8000/users
 ```
 
 

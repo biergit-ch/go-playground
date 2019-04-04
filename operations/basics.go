@@ -9,7 +9,7 @@ links:
 
 func TestForLoop(c int) {
 
-	persons := [3]string{"jan", "colin", "sarah"}
+	persons := [3]string{"jan", "test1", "test2"}
 
 	for i := 0; i < len(persons); i++ {
 		fmt.Println("Loop[", i, "]:", persons[i])
@@ -25,8 +25,8 @@ func TestArray() {
 	// define an array only with length
 	var personsTwo [3] string
 	personsTwo[0] = "jan"
-	personsTwo[2] = "colin"
-	personsTwo[1] = "sarah"
+	personsTwo[2] = "test1"
+	personsTwo[1] = "test2"
 
 	fmt.Println("Array:", personsOne)
 	fmt.Println("Array:", personsTwo)

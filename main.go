@@ -9,7 +9,7 @@ import (
 )
 
 // define array and initialize it with values
-var persons = []string{"jan", "colin", "sarah"}
+var persons = []string{"jan", "test1", "test2"}
 
 func main() {
 
