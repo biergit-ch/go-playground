@@ -1,8 +1,8 @@
-package operations
+package playground
 
 import (
 	"fmt"
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/user"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/model"
 )
 
 /*
@@ -35,7 +35,7 @@ func WithMultipleReturnValues(a int, b int) (int, int) {
 	return a * 5, b * 4
 }
 
-func WithReferenceArguemnt(user *user.User) {
+func WithReferenceArguemnt(user *model.User) {
 	fmt.Println("Print user Value from reference", user)
 	user.FirstName = "manipulated from function jan"
 }

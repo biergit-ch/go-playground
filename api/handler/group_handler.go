@@ -1,16 +1,19 @@
-package group
+package handler
 
 import (
 	"encoding/json"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/service"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
 type GroupHandler struct {
-	Service GroupService
+	Service service.GroupService
 }
 
-func NewGroupHandler(router *mux.Router, s GroupService) {
+func NewGroupHandler(router *mux.Router, s service.GroupService) {
+	log.Print("Initialize Group Handler..")
 	handler := &GroupHandler{
 		Service: s,
 	}

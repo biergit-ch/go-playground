@@ -1,28 +1,32 @@
 package api
 
 import (
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/user"
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/group"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/handler"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/service"
 	. "github.com/gorilla/mux"
+	"log"
 )
 
 type RestServer struct {
-	userService user.UserService
-	groupService group.GroupService
+	userService service.UserService
+	groupService service.GroupService
+	transactionService service.TransactionService
 }
 
-func NewHttpServer(userService user.UserService, groupService group.GroupService) *RestServer {
+func NewHttpServer(userService service.UserService, groupService service.GroupService, transactionService service.TransactionService) *RestServer {
 	return &RestServer{
 		userService: userService,
 		groupService: groupService,
+		transactionService: transactionService,
 	}
 }
 
 func (rs *RestServer) InitHandler() *Router {
 
+	log.Print("Initialize Router..")
 	r := NewRouter()
-	user.NewUserHandler(r, rs.userService)
-	group.NewGroupHandler(r, rs.groupService)
-
+	handler.NewUserHandler(r, rs.userService)
+	handler.NewGroupHandler(r, rs.groupService)
+	handler.NewTransactionHandler(r, rs.transactionService)
 	return r
 }

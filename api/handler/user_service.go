@@ -1,16 +1,19 @@
-package user
+package handler
 
 import (
 	"encoding/json"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/service"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
 type UserHandler struct {
-	Service UserService
+	Service service.UserService
 }
 
-func NewUserHandler(router *mux.Router, s UserService) {
+func NewUserHandler(router *mux.Router, s service.UserService) {
+	log.Print("Initialize User Handler..")
 	handler := &UserHandler{
 		Service: s,
 	}

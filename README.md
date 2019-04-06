@@ -31,6 +31,8 @@ __Layout & Architecture__
 * https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 * https://github.com/golang-standards/project-layout
 * https://hackernoon.com/golang-clean-archithecture-efd6d7c43047
+* https://rakyll.org/style-packages/
+* https://www.reddit.com/r/golang/comments/8g26il/what_is_the_recommended_go_project_folder/
 
 
 __Interfaces__
@@ -47,9 +49,17 @@ __Networking__
 * http://www.gorillatoolkit.org/pkg/mux
 * https://www.codementor.io/codehakase/building-a-restful-api-with-golang-a6yivzqdo
 
+__Json__
+
+* https://golang.org/pkg/encoding/json
+
 __Configuration__
 
 * http://goinbigdata.com/persisting-application-configuration-in-golang/
+
+__Best Practices__
+
+* https://peter.bourgon.org/go-in-production/
 
 
 
