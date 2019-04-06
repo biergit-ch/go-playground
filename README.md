@@ -12,8 +12,9 @@ $ dep ensure
 $ docker-compose up 
 $ go build && ./go-basics
 
-navigate to: http://localhost:8000/
 navigate to: http://localhost:8000/users
+navigate to: http://localhost:8000/groups
+navigate to: http://localhost:8000/transactions
 ```
 
 
