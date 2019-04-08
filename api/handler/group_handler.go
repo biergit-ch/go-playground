@@ -2,26 +2,18 @@ package handler
 
 import (
 	"encoding/json"
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/service"
 	"github.com/gorilla/mux"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-type GroupHandler struct {
-	Service service.GroupService
+func (s *Services) NewGroupHandler(router *mux.Router) {
+	log.Debug("Initialize Group Handler..")
+	router.Handle("/groups", s.GetGroups()).Methods("GET")
 }
 
-func NewGroupHandler(router *mux.Router, s service.GroupService) {
-	log.Print("Initialize Group Handler..")
-	handler := &GroupHandler{
-		Service: s,
-	}
-	router.Handle("/groups", GetGroups(handler)).Methods("GET")
-}
-
-func GetGroups(env *GroupHandler) http.Handler {
-
+func (s *Services) GetGroups() http.Handler {
+	log.Debug("Initialize GET:Groups Endpoint..")
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method != "GET" {
@@ -29,7 +21,7 @@ func GetGroups(env *GroupHandler) http.Handler {
 			return
 		}
 
-		groups := env.Service.GetAllGroups()
+		groups := s.groupService.GetAllGroups()
 
 		json.NewEncoder(w).Encode(groups)
 	})

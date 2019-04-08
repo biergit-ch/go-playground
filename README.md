@@ -1,4 +1,4 @@
-# GO Rest Demo
+# GO Demo REST API
 
 ### Dependencies
 
@@ -19,6 +19,10 @@ navigate to: http://localhost:8000/transactions
 
 
 ### Sources
+
+__Basics__
+
+* https://hackernoon.com/basics-of-golang-for-beginners-6bd9b40d79ae
 
 __Conventions__
 
@@ -59,6 +63,22 @@ __Configuration__
 __Best Practices__
 
 * https://peter.bourgon.org/go-in-production/
+
+### Logging
+
+User this logging mechanism to be indexed by a logging system `https://github.com/sirupsen/logrus`
+
+```
+import (
+	log "github.com/sirupsen/logrus"
+)
+
+log.WithFields(log.Fields{
+		"key": "value",
+	}).Debug("Save user in repository")
+	
+Result: time="2019-04-08T23:31:03+02:00" level=debug msg="Save user in repository" user_id=0
+```
 
 
 

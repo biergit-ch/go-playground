@@ -1,18 +1,15 @@
 package playground
 
-import "fmt"
-
-/**
-links:
-- https://hackernoon.com/basics-of-golang-for-beginners-6bd9b40d79ae
- */
+import (
+	log "github.com/sirupsen/logrus"
+)
 
 func TestForLoop(c int) {
 
 	persons := [3]string{"jan", "test1", "test2"}
 
 	for i := 0; i < len(persons); i++ {
-		fmt.Println("Loop[", i, "]:", persons[i])
+		log.Println("Loop[", i, "]:", persons[i])
 	}
 
 }
@@ -28,12 +25,12 @@ func TestArray() {
 	personsTwo[2] = "test1"
 	personsTwo[1] = "test2"
 
-	fmt.Println("Array:", personsOne)
-	fmt.Println("Array:", personsTwo)
+	log.Println("Array:", personsOne)
+	log.Println("Array:", personsTwo)
 }
 
 func TestSlice(persons []string) {
 	// access a specific part of an array
 	var firstTwoPersons = persons[0:2]
-	fmt.Println("Slice:", firstTwoPersons)
+	log.Println("Slice:", firstTwoPersons)
 }
