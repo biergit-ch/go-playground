@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"git.skydevelopment.ch/zrh-dev/go-basics/api"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/handler"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/model"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/service"
 	"git.skydevelopment.ch/zrh-dev/go-basics/playground"
 	"github.com/jinzhu/gorm"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -17,6 +16,9 @@ var persons = []string{"jan", "test1", "test2"}
 
 func main() {
 
+	// Setup Logging
+	SetupLogger()
+
 	// Test basic concepts
 	BasicPrinciples()
 
@@ -24,7 +26,7 @@ func main() {
 	db, err := gorm.Open("mysql", "go:123@tcp(127.0.0.1:3333)/go-basics?charset=utf8&parseTime=True")
 
 	if err != nil {
-		log.Fatal("Failed to connect to database", err)
+		log.Debug("Failed to connect to database", err)
 	}
 
 	// Migrate Database
@@ -66,15 +68,15 @@ func main() {
 		Amount: 2,
 	}
 
-	// Create New User
+	// Create Services
 	userService.CreateUser(&jan)
 	groupService.CreateGroup(&biergit)
 	transactionService.CreateTransaction(&bspTrans)
 
-	httpServer := api.NewHttpServer(userService, groupService, transactionService)
+	httpServer := handler.NewHttpServer(userService, groupService, transactionService)
 	router := httpServer.InitHandler()
 
-	http.ListenAndServe("127.0.0.1:8000", router )
+	log.Fatal(http.ListenAndServe("127.0.0.1:8000", router))
 }
 
 /**
@@ -87,7 +89,7 @@ Test Basic GO Principles
  */
 func BasicPrinciples() {
 
-	log.Println("Playground")
+	log.Debug("Playground")
 
 	// define value
 	c := 15
@@ -105,7 +107,7 @@ func BasicPrinciples() {
 	playground.WithArguments(1, 2)
 
 	var a, b int = playground.WithMultipleReturnValues(1, 2)
-	fmt.Println("Multiple Return:", a, b)
+	log.Debug("Multiple Return:", a, b)
 
 	// crate an instance of Person
 	user := model.User{
@@ -116,12 +118,18 @@ func BasicPrinciples() {
 	// pass the reference of the person option
 	playground.WithReferenceArguemnt(&user)
 
-	fmt.Println("Person from Main Context:", user)
+	log.Debug("Person from Main Context:", user)
 
-	log.Println("Playground finished")
+	log.Debug("Playground finished")
+}
+
+func SetupLogger() {
+	log.SetFormatter(&log.TextFormatter {})
+	log.SetLevel(log.DebugLevel)
 }
 
 func MigrateDB(db *gorm.DB) {
+	log.Debug("Migrating Database Schema")
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.Group{})
 	db.AutoMigrate(&model.Transaction{})

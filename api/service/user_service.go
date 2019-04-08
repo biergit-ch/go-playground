@@ -3,7 +3,7 @@ package service
 import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/model"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type UserService interface {
@@ -31,5 +31,8 @@ func (s *userService) GetAllUsers() []*model.User {
 }
 
 func (s *userService) CreateUser(user *model.User) {
+	log.WithFields(log.Fields{
+		"user_id": user.ID,
+	}).Debug("Save user in repository")
 	s.repo.Save(user)
 }

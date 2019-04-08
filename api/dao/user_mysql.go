@@ -4,7 +4,6 @@ import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-
 )
 
 type UserRepository interface {

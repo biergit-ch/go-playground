@@ -3,7 +3,7 @@ package service
 import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/model"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type GroupService interface {

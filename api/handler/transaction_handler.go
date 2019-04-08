@@ -2,26 +2,19 @@ package handler
 
 import (
 	"encoding/json"
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/service"
 	"github.com/gorilla/mux"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-type TransactionHandler struct {
-	Service service.TransactionService
+
+func (s *Services) NewTransactionHandler(router *mux.Router) {
+	log.Debug("Initialize Transaction Handler..")
+	router.Handle("/transactions", s.GetTransactions()).Methods("GET")
 }
 
-func NewTransactionHandler(router *mux.Router, s service.TransactionService) {
-	log.Print("Initialize Transaction Handler..")
-	handler := &TransactionHandler{
-		Service: s,
-	}
-	router.Handle("/transactions", GetTransactions(handler)).Methods("GET")
-}
-
-func GetTransactions(env *TransactionHandler) http.Handler {
-
+func (s *Services) GetTransactions() http.Handler {
+	log.Debug("Initialize GET:Transaction Endpoint..")
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method != "GET" {
@@ -29,7 +22,7 @@ func GetTransactions(env *TransactionHandler) http.Handler {
 			return
 		}
 
-		transactions := env.Service.GetAllTransactions()
+		transactions := s.transactionService.GetAllTransactions()
 
 		json.NewEncoder(w).Encode(transactions)
 	})
