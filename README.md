@@ -1,20 +1,68 @@
 # GO Demo REST API
 
-### Dependencies
+### Prerequisite
+
+__GO Setup on OSX__
+
+* `golang` http://sourabhbajaj.com/mac-setup/Go/README.html
+* `dependency-management` https://github.com/golang/dep
+
+__GO Setup on Windows__
+
+* `golang` http://www.wadewegner.com/2014/12/easy-go-programming-setup-for-windows/
+* `dependency-management` https://golang.github.io/dep/docs/installation.html
+
+### Install Dependencies
 
 ```
 $ dep status
 $ dep ensure
-```
+````
 
 ### Run
 ```
 $ docker-compose up 
 $ go build && ./go-basics
+```
+* http://localhost:8000/users
+* http://localhost:8000/groups
+* http://localhost:8000/transactions
 
-navigate to: http://localhost:8000/users
-navigate to: http://localhost:8000/groups
-navigate to: http://localhost:8000/transactions
+### Layout
+
+```
+  +--------------------------------------------------+   +-----------------+
+  |                      api                         |   |     vendor      |
+  |--------------------------------------------------|   |-----------------|
+  | +---------+  +---------+  +---------+  +-------+ |   |                 |
+  | |         |  |         |  |         |  |       | |   |                 |
+  | |         |  |         |  |         |  |       | |   |                 |
+  | |         |  |         |  |         |  |       | |   |                 |
+  | |         |  |         |  |         |  |       | |   |                 |
+  | | handler |+>| service |+>|  repo   |+>|  db   | |   |  vendor pkgs    |
+  | |         |  |         |  |         |  |       | |   |                 |
+  | |         |  |         |  |         |  |       | |   |                 |
+  | |         |  |         |  |         |  |       | |   |                 |
+  | |         |  |         |  |         |  |       | |   |                 |
+  | +---------+  +---------+  +---------+  +-------+ |   |                 |
+  +--------------------------------------------------+   +-----------------+
+```
+
+
+### Logging
+
+Use this logging mechanism to be indexed by a logging system `https://github.com/sirupsen/logrus`
+
+```
+import (
+	log "github.com/sirupsen/logrus"
+)
+
+log.WithFields(log.Fields{
+		"key": "value",
+	}).Debug("Save user in repository")
+	
+Result: time="2019-04-08T23:31:03+02:00" level=debug msg="Save user in repository" user_id=0
 ```
 
 
@@ -64,21 +112,7 @@ __Best Practices__
 
 * https://peter.bourgon.org/go-in-production/
 
-### Logging
 
-User this logging mechanism to be indexed by a logging system `https://github.com/sirupsen/logrus`
-
-```
-import (
-	log "github.com/sirupsen/logrus"
-)
-
-log.WithFields(log.Fields{
-		"key": "value",
-	}).Debug("Save user in repository")
-	
-Result: time="2019-04-08T23:31:03+02:00" level=debug msg="Save user in repository" user_id=0
-```
 
 
 
