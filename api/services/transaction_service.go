@@ -1,14 +1,14 @@
-package service
+package services
 
 import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/model"
+	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	log "github.com/sirupsen/logrus"
 )
 
 type TransactionService interface {
-	GetAllTransactions() []*model.Transaction
-	CreateTransaction(user *model.Transaction)
+	GetAllTransactions() []*models.Transaction
+	CreateTransaction(user *models.Transaction)
 }
 
 type transactionService struct {
@@ -21,7 +21,7 @@ func NewTransactionService(r dao.TransactionRepository) TransactionService {
 	}
 }
 
-func (s *transactionService) GetAllTransactions() []*model.Transaction {
+func (s *transactionService) GetAllTransactions() []*models.Transaction {
 
 	transactions, err := s.repo.FindAll()
 	if err != nil {
@@ -30,6 +30,6 @@ func (s *transactionService) GetAllTransactions() []*model.Transaction {
 	return transactions
 }
 
-func (s *transactionService) CreateTransaction(t *model.Transaction) {
+func (s *transactionService) CreateTransaction(t *models.Transaction) {
 	s.repo.Save(t)
 }
