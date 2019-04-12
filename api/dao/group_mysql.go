@@ -1,14 +1,14 @@
 package dao
 
 import (
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/model"
+	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 type GroupRepository interface {
-	FindAll() ([]*model.Group, error)
-	Save(user *model.Group)
+	FindAll() ([]*models.Group, error)
+	Save(user *models.Group)
 }
 
 type groupRepository struct {
@@ -21,14 +21,14 @@ func NewMysqlGroupRepository(db *gorm.DB) GroupRepository {
 	}
 }
 
-func (r *groupRepository) FindAll() ([]*model.Group, error) {
+func (r *groupRepository) FindAll() ([]*models.Group, error) {
 
-	var groups []*model.Group
+	var groups []*models.Group
 	r.db.Find(&groups)
 
 	return groups, r.db.Error
 }
 
-func (r *groupRepository) Save(group *model.Group) {
+func (r *groupRepository) Save(group *models.Group) {
 	r.db.Create(&group)
 }

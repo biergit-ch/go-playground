@@ -65,6 +65,36 @@ log.WithFields(log.Fields{
 Result: time="2019-04-08T23:31:03+02:00" level=debug msg="Save user in repository" user_id=0
 ```
 
+### Swagger
+
+```
+go get -u github.com/go-swagger/go-swagger/cmd/swagger
+```
+
+Use this commenting style to be scanned by swagger generator
+```
+// swagger:operation GET /repo/{author} repos repoList
+// ---
+// summary: List the repositories owned by the given author.
+// description: If author length is between 6 and 8, Error Not Found (404) will be returned.
+// parameters:
+// - name: author
+//   in: path
+//   description: username of author
+//   type: string
+//   required: true
+// responses:
+//   "200":
+//     "$ref": "#/responses/reposResp"
+//   "404":
+//     "$ref": "#/responses/notFound"
+```
+
+### Generate GO Docs
+run `godoc -http=:6060 -v`
+```
+http://localhost:6060/pkg/git.skydevelopment.ch/zrh-dev/go-basics/
+```
 
 ### Sources
 
@@ -104,9 +134,17 @@ __Json__
 
 * https://golang.org/pkg/encoding/json
 
+__Error Handling__
+
+* https://blog.golang.org/error-handling-and-go
+
 __Configuration__
 
 * http://goinbigdata.com/persisting-application-configuration-in-golang/
+
+__Docs__
+
+* https://blog.golang.org/godoc-documenting-go-code
 
 __Best Practices__
 

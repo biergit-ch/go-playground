@@ -1,4 +1,4 @@
-package handler
+package controllers
 
 import (
 	"encoding/json"
@@ -10,6 +10,7 @@ import (
 
 func (s *Services) NewTransactionHandler(router *mux.Router) {
 	log.Debug("Initialize Transaction Handler..")
+	router.Handle("/transactions", s.GetTransactions()).Methods("GET")
 	router.Handle("/transactions", s.GetTransactions()).Methods("GET")
 }
 
