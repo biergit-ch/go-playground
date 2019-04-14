@@ -36,3 +36,11 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/codegangsta/negroni"
+  version = "1.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/auth0/go-jwt-middleware"

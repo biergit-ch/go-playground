@@ -1,11 +1,9 @@
 package models
 
-import (
-	"github.com/jinzhu/gorm"
-)
-
+// A transaction will be used to store a beer owe
+// swagger:model Transaction
 type Transaction struct {
-	gorm.Model
+	Base
 	Context   Group `gorm:"foreignkey:ContextID"`
 	Source    User  `gorm:"foreignkey:SourceID"`
 	Target    User  `gorm:"foreignkey:TargetID"`
