@@ -1,8 +1,8 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
+// A user
+// swagger:model Group
 type Group struct {
-	gorm.Model
+	Base
 	GroupName string
 }

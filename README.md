@@ -90,6 +90,33 @@ Use this commenting style to be scanned by swagger generator
 //     "$ref": "#/responses/notFound"
 ```
 
+Use this commenting style for model
+```
+// Description of the Model
+// swagger:model User
+```
+
+Use this commenting style for main package
+```
+// API REST EXAMPLE
+//
+// This is a example over how to create the api from the source.
+//
+//     Schemes: http, https
+//     Host: localhost:3000
+//     Version: 0.1.0
+//     basePath: /api
+//
+//     Consumes:
+//     - application/json
+//
+//     Produces:
+//     - application/json
+//
+// swagger:meta
+package main
+```
+
 ### Generate GO Docs
 run `godoc -http=:6060 -v`
 ```
@@ -100,6 +127,7 @@ http://localhost:6060/pkg/git.skydevelopment.ch/zrh-dev/go-basics/
 
 __Basics__
 
+* https://awesome-go.com/
 * https://hackernoon.com/basics-of-golang-for-beginners-6bd9b40d79ae
 
 __Conventions__
@@ -109,6 +137,8 @@ __Conventions__
 
 __Layout & Architecture__
 
+* https://www.youtube.com/watch?v=cmkKxNN7cs4
+* https://www.youtube.com/watch?v=1rxDzs0zgcE
 * https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 * https://github.com/golang-standards/project-layout
 * https://hackernoon.com/golang-clean-archithecture-efd6d7c43047

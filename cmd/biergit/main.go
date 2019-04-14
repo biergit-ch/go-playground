@@ -1,3 +1,18 @@
+// GO REST API Demo
+//
+// This is a sample implementation with golang. This project will be used for learnings.
+//
+//     Schemes: http, https
+//     Host: localhost:8000
+//     Version: 0.1.0
+//
+//     Consumes:
+//     - application/json
+//
+//     Produces:
+//     - application/json
+//
+// swagger:meta
 package main
 
 import (
@@ -6,6 +21,7 @@ import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/controllers"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/services"
+	"git.skydevelopment.ch/zrh-dev/go-basics/config"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"git.skydevelopment.ch/zrh-dev/go-basics/playground"
 	"github.com/jinzhu/gorm"
@@ -13,11 +29,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 )
 
 // define array and initialize it with values
 var persons = []string{"jan", "test1", "test2"}
+
+var conf *config.Config
 
 func main() {
 
@@ -28,13 +47,16 @@ func main() {
 	// Setup Logging
 	SetupLogger()
 
+	// Load configuration
+	conf = config.LoadConfig("dev")
+
 	// Test basic concepts
 	BasicPrinciples()
 
 	log.Debug("Establish DB Connection")
 
 	// Create new MYSQL Connection
-	db, err := gorm.Open("mysql", "go:123@tcp(127.0.0.1:3333)/go?charset=utf8&parseTime=True")
+	db, err := gorm.Open("mysql", conf.DB.User + ":" + conf.DB.Password + "@tcp(" + conf.DB.Host + ":" + strconv.Itoa(conf.DB.Port) + ")/" + conf.DB.Schema + "?charset=utf8&parseTime=True")
 	db.LogMode(true)
 
 	if err != nil {
@@ -43,7 +65,6 @@ func main() {
 
 	// Migrate Database
 	MigrateDB(db)
-
 
 	// Create Repository
 	userRepo := dao.NewMysqlUserRepository(db)
@@ -55,42 +76,15 @@ func main() {
 	groupService := services.NewGroupService(groupRepo)
 	transactionService := services.NewTransactionService(transactionRepo)
 
-	// Add some Mock Data
-	jan := models.User{
-		FirstName: "Jan",
-		LastName:  "Minder",
-	}
-
-	// Add some Mock Data
-	luca := models.User{
-		FirstName: "Luca",
-		LastName:  "Hostetter",
-	}
-
-	// Add some Mock Data
-	biergit := models.Group{
-		GroupName: "biergit",
-	}
-
-	// Add some Mock Data
-	bspTrans := models.Transaction{
-		Source: jan,
-		Target:  luca,
-		Context: biergit,
-		Amount: 2,
-	}
-
-	// Create Services
-	userService.CreateUser(&jan)
-	groupService.CreateGroup(&biergit)
-	transactionService.CreateTransaction(&bspTrans)
+	// Add Mock Data
+	addMockData(userService, groupService, transactionService)
 
 	// Create HTTP Server
-	httpServer := controllers.NewHttpServer(userService, groupService, transactionService)
+	httpServer := controllers.NewHttpServer(userService, groupService, transactionService, conf)
 	router := httpServer.InitializeHandler()
 
 	srv := &http.Server{
-		Addr:         "0.0.0.0:8000",
+		Addr:         conf.Server.Host + ":" + strconv.Itoa(conf.Server.Port),
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
@@ -124,6 +118,42 @@ func main() {
 
 	log.Println("shutting down")
 	os.Exit(0)
+}
+
+
+func addMockData(userService services.UserService, groupService services.GroupService, transactionService services.TransactionService) {
+
+	log.Debug("Add Mock data")
+
+	// Add some Mock Data
+	jan := models.User{
+		FirstName: "Jan",
+		LastName:  "Minder",
+	}
+
+	// Add some Mock Data
+	luca := models.User{
+		FirstName: "Luca",
+		LastName:  "Hostetter",
+	}
+
+	// Add some Mock Data
+	biergit := models.Group{
+		GroupName: "biergit",
+	}
+
+	// Add some Mock Data
+	bspTrans := models.Transaction{
+		Source: jan,
+		Target:  luca,
+		Context: biergit,
+		Amount: 2,
+	}
+
+	// Create Services
+	userService.CreateUser(&jan)
+	groupService.CreateGroup(&biergit)
+	transactionService.CreateTransaction(&bspTrans)
 }
 
 /**

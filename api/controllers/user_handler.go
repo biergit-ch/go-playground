@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"git.skydevelopment.ch/zrh-dev/go-basics/models"
+	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -17,10 +19,20 @@ func (api *Server) NewUserHandler(router *mux.Router) {
 	// Create all Users Handler
 	userRouter := router.PathPrefix("/users").Subrouter()
 
-	userRouter.Handle("/", api.GetUsers()).Methods("GET", "POST")
-	userRouter.Handle("/{userId}", api.GetUser()).Methods("GET")
-	userRouter.Handle("/{userId}", api.UpdateUserById()).Methods("PUT")
-	userRouter.Handle("/{userId}", api.DeleteUserById()).Methods("DELETE")
+	userRouter.Handle("/", api.GetUsers()).Methods("GET")
+	userRouter.Handle("/", api.CreateUser()).Methods("POST")
+	userRouter.Handle("/{userId:[0-9]+}", api.GetUser()).Methods("GET")
+	userRouter.Handle("/{userId:[0-9]+}", api.UpdateUserById()).Methods("PUT")
+	userRouter.Handle("/{userId:[0-9]+}", api.DeleteUserById()).Methods("DELETE")
+
+	// Test implementation of oauth protection
+	userRouter.Handle("/protected", negroni.New(
+		negroni.HandlerFunc(api.jwt.HandlerWithNext),
+		negroni.Wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			message := "Hello from a private endpoint! You need to be authenticated to see this."
+			api.responseJSON(message, w, http.StatusOK)
+		}))))
+
 }
 
 // swagger:operation GET /users/ list
@@ -74,10 +86,8 @@ func (api *Server) GetUser() http.Handler {
 		if len(users) > 0 {
 			json.NewEncoder(w).Encode(users[0])
 		} else {
-			http.Error(w, http.StatusText(404), 404)
+			http.Error(w, http.StatusText(404), http.StatusNotFound)
 		}
-
-
 
 	})
 }
@@ -85,12 +95,22 @@ func (api *Server) GetUser() http.Handler {
 func (api *Server) CreateUser() http.Handler {
 	log.Debug("Initialize POST:Users Endpoint..")
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 		if r.Method != "POST" {
 			http.Error(w, http.StatusText(405), 405)
 			return
 		}
 
-		users := api.services.userService.GetAllUsers()
+		user := models.User{}
+
+		//Parse Json Request Body
+		err := json.NewDecoder(r.Body).Decode(&user)
+
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		}
+
+		users := api.services.userService.CreateUser(&user)
 
 		json.NewEncoder(w).Encode(users)
 	})
@@ -130,20 +150,21 @@ func (api *Server) DeleteUserById() http.Handler {
 
 		// Get Path Parameter
 		vars := mux.Vars(r)
-		userId, err := strconv.ParseInt(vars["userId"], 10, 64)
+		userId, convErr := strconv.ParseInt(vars["userId"], 10, 64)
 
-		if err != nil {
+		if convErr != nil {
 			log.Error("Failed to convert userId " , vars["userId"], " to integer")
 		}
 
 		log.Debug("Delete user with id ", userId, " from repo")
 
-		error := api.services.userService.DeleteUser(userId)
+		delErr := api.services.userService.DeleteUser(userId)
 
-		if error != nil {
-			w.WriteHeader(204)
-		} else {
+		if delErr != nil {
+			log.Error("Failed to delete user ", delErr)
 			w.WriteHeader(500)
+		} else {
+			w.WriteHeader(204)
 		}
 
 	})

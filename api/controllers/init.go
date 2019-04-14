@@ -1,7 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/oauth"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/services"
+	"git.skydevelopment.ch/zrh-dev/go-basics/config"
+	"github.com/auth0/go-jwt-middleware"
 	. "github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -16,9 +20,11 @@ type Services struct {
 type Server struct {
 	router *Router
 	services Services
+	jwt *jwtmiddleware.JWTMiddleware
+	conf *config.Config
 }
 
-func NewHttpServer(userService services.UserService, groupService services.GroupService, transactionService services.TransactionService) *Server {
+func NewHttpServer(userService services.UserService, groupService services.GroupService, transactionService services.TransactionService, c *config.Config) *Server {
 
 	// Setup all Services
 	services := Services{
@@ -29,8 +35,9 @@ func NewHttpServer(userService services.UserService, groupService services.Group
 
 	// Setup Server
 	server := Server{
-		router: NewRouter(),
+		router: nil,
 		services: services,
+		conf: c,
 	}
 
 	return &server
@@ -43,19 +50,25 @@ func (api *Server) InitializeHandler() *Router {
 
 	r := NewRouter()
 
+	// Initialize the JWT Middleware
+	api.jwt = oauth.NewJwtMiddleware(api.conf)
+
 	// inject middleware
 	r.Use(api.loggingMiddleware)
+	r.Use(api.headerMiddleware)
 
 	// initialize handler
 	api.NewUserHandler(r)
 
-	return r
+	// store router in server
+	api.router = r
+
+	return api.router
 }
 
 // Logging Middleware for all HTTP Requests
 func (api *Server) loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		log.WithFields(log.Fields{
 			"request_uri": r.RequestURI,
 			"protocol": r.Proto,
@@ -66,3 +79,30 @@ func (api *Server) loggingMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+// Modify HTTP Header
+func (api *Server) headerMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Add("Content-Type", "application/json")
+
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (api *Server) responseJSON(message string, w http.ResponseWriter, statusCode int) {
+	response := oauth.Response{message}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	w.Write(jsonResponse)
+}
+
+
