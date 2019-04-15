@@ -35,7 +35,7 @@ $ go build && ./go-basics
 ```
 * http://localhost:8000/users
 * http://localhost:8000/groups
-* http://localhost:8000/transactions
+* http://localhost:8000/transactions `protected`
 
 ### Layout
 
