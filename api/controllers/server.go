@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"encoding/json"
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/oauth"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/services"
-	"git.skydevelopment.ch/zrh-dev/go-basics/config"
+	"github.com/auth0-community/auth0"
 	"github.com/auth0/go-jwt-middleware"
-	. "github.com/gorilla/mux"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"gopkg.in/square/go-jose.v2"
 	"net/http"
 )
 
@@ -20,13 +20,12 @@ type Services struct {
 
 type Server struct {
 	echo *echo.Echo
-	router *Router
 	services Services
 	jwt *jwtmiddleware.JWTMiddleware
-	conf *config.Config
+	conf *viper.Viper
 }
 
-func NewServer(userService services.UserService, groupService services.GroupService, transactionService services.TransactionService, c *config.Config) *Server {
+func NewServer(userService services.UserService, groupService services.GroupService, transactionService services.TransactionService, c *viper.Viper) *Server {
 
 	// Setup all Services
 	services := Services{
@@ -37,7 +36,6 @@ func NewServer(userService services.UserService, groupService services.GroupServ
 
 	// Setup Server
 	server := Server{
-		router: nil,
 		services: services,
 		conf: c,
 		echo: nil,
@@ -52,75 +50,67 @@ func (api *Server) InitializeEchoHandler() *echo.Echo {
 
 	// Middleware
 	e.Use(api.loggingMiddleware)
+	e.Use(api.headerMiddleware)
 
-
-	api.NewUserEchoHandler(e.Group("/users"))
+	// Initialize all sub handlers
+	api.NewUserHandler(e.Group("/users"))
+	api.NewTransactionHandler(e.Group("/transactions"))
+	api.NewGroupHandler(e.Group("/groups"))
 
 	return e
-}
-
-
-func (api *Server) InitializeHandler() *Router {
-
-	log.Debug("Initialize Router..")
-
-	r := NewRouter()
-
-	// Initialize the JWT Middleware
-	api.jwt = oauth.NewJwtMiddleware(api.conf)
-
-	// inject middleware
-	//r.Use(api.loggingMiddleware)
-	r.Use(api.headerMiddleware)
-
-	// initialize handler
-	api.NewUserHandler(r)
-
-	// store router in server
-	api.router = r
-
-	return api.router
 }
 
 // logging middleware for echo
 func (api *Server) loggingMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if err := next(c); err != nil {
-			c.Error(err)
-		}
 		log.WithFields(log.Fields{
 			"request_uri": c.Request().RequestURI,
 			"protocol": c.Request().Proto,
 			"method": c.Request().Method,
 		}).Debug("Calling Endpoint")
-		return nil
+
+		return next(c)
 	}
 }
 
+// Use an Auth0 oAuth Provider to authorize access tokens
+func (api *Server) authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+
+		client := auth0.NewJWKClient(auth0.JWKClientOptions{URI: api.conf.GetString("auth0.jwks")}, nil)
+		log.Debug("auth0 client ", client)
+
+		audience := api.conf.GetString("auth0.audience")
+		log.Debug("auth0 audience ", audience)
+
+		configuration := auth0.NewConfiguration(client, []string{audience}, api.conf.GetString("auth0.issuer"), jose.RS256)
+		validator := auth0.NewValidator(configuration, nil)
+		log.Debug("auth0 config ", configuration)
+
+		token, err := validator.ValidateRequest(c.Request())
+		log.Debug("auth0 token ", token)
+
+		if token == nil {
+			c.Error(middleware.ErrJWTMissing)
+		}
+
+		if err != nil {
+			log.Debug("auth0 error ", err)
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
+		} else {
+			log.Debug("auth0 token is valid")
+			return nil
+		}
+	}
+}
 
 // Modify HTTP Header
-func (api *Server) headerMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		w.Header().Add("Content-Type", "application/json")
-
+func (api *Server) headerMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		c.Request().Header.Add("Content-Type", "application/json")
 		// Call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(w, r)
-	})
-}
-
-func (api *Server) responseJSON(message string, w http.ResponseWriter, statusCode int) {
-	response := oauth.Response{message}
-
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return next(c)
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	w.Write(jsonResponse)
 }
-
 

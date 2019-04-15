@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -30,7 +30,7 @@ type auth0 struct {
 	Jwks string
 }
 
-func LoadConfig(env string) *Config {
+func LoadConfig(env string) *viper.Viper {
 
 	var confFile string
 
@@ -49,15 +49,16 @@ func LoadConfig(env string) *Config {
 	v.SetConfigName(confFile) // name of config file (without extension)
 	v.AddConfigPath("config")
 
+	v.SetEnvPrefix("BG")
+
+	v.BindEnv("auth0.audience", "AUTH0_AUDIENCE")
+	v.BindEnv("auth0.issuer","AUTH0_ISSUER")
+	v.BindEnv("auth0.jwks", "AUTH0_JWKS")
+
 	err := v.ReadInConfig() // Find and read the config file
 	if err != nil { // Handle errors reading the config file
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		log.Fatal("Fatal error config file: ", err)
 	}
 
-	var c Config
-	if err := v.Unmarshal(&c); err != nil {
-		fmt.Printf("couldn't read config: %s", err)
-	}
-
-	return &c
+	return v
 }

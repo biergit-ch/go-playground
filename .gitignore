@@ -25,3 +25,4 @@ go-basicstus
 
 *.lock
 go-basics
+swagger.json

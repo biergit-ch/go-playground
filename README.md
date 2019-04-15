@@ -19,6 +19,15 @@ $ dep status
 $ dep ensure
 ````
 
+### Setup Environment
+This application needs following env variables to use the auth0 authentication.
+
+| Environment         | Value         | 
+| :------------------ |:------------- | 
+| `AUTH0_AUDIENCE`    | api identity  | 
+| `AUTH0_ISSUER`      | issuer url    | 
+| `AUTH0_JWKS`        | keystore json | 
+
 ### Run
 ```
 $ docker-compose up 
@@ -117,6 +126,13 @@ Use this commenting style for main package
 package main
 ```
 
+Use these commands to generate swagger spec file and serve it
+```
+cd cmd/biergit
+swagger generate spec -o ../../swagger.json
+swagger serve -p 8008 -F redoc ../../swagger.json
+```
+
 ### Generate GO Docs
 run `godoc -http=:6060 -v`
 ```
@@ -127,6 +143,7 @@ http://localhost:6060/pkg/git.skydevelopment.ch/zrh-dev/go-basics/
 
 __Basics__
 
+* https://github.com/Alikhll/golang-developer-roadmap
 * https://awesome-go.com/
 * https://hackernoon.com/basics-of-golang-for-beginners-6bd9b40d79ae
 
@@ -157,6 +174,7 @@ __Persistence__
 
 __Networking__
 
+* https://echo.labstack.com/guide
 * http://www.gorillatoolkit.org/pkg/mux
 * https://www.codementor.io/codehakase/building-a-restful-api-with-golang-a6yivzqdo
 
