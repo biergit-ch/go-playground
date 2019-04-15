@@ -22,11 +22,11 @@ $ dep ensure
 ### Setup Environment
 This application needs following env variables to use the auth0 authentication.
 
-| Environment         | Value         | 
-| :------------------ |:------------- | 
-| `AUTH0_AUDIENCE`    | api identity  | 
-| `AUTH0_ISSUER`      | issuer url    | 
-| `AUTH0_JWKS`        | keystore json | 
+| Environment         | Value         | Example                            |
+| :------------------ |:------------- | :--------------------------------- |
+| `AUTH0_AUDIENCE`    | api identity  |  custom_identity                   |
+| `AUTH0_ISSUER`      | issuer url    |  https://xy.eu.auth0.com/          |
+| `AUTH0_JWKS`        | keystore json |  https://../.well-known/jwks.json  |
 
 ### Run
 ```
