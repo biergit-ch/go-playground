@@ -44,9 +44,10 @@ func NewServer(userService services.UserService, groupService services.GroupServ
 	return &server
 }
 
-func (api *Server) InitializeEchoHandler() *echo.Echo {
+func (api *Server) InitializeHandler() *echo.Echo {
 
 	e := echo.New()
+	e.HideBanner = true
 
 	// Middleware
 	e.Use(api.loggingMiddleware)

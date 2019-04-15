@@ -169,6 +169,7 @@ __Interfaces__
 
 __Persistence__
 
+* https://www.reddit.com/r/golang/comments/8j3219/anyone_using_gorm_in_production_is_it_slow/
 * http://doc.gorm.io
 * https://www.alexedwards.net/blog/organising-database-access
 

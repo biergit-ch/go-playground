@@ -83,13 +83,13 @@ func main() {
 
 	// Create HTTP Server
 	httpServer := controllers.NewServer(userService, groupService, transactionService, conf)
-	echoServer := httpServer.InitializeEchoHandler()
+	echoServer := httpServer.InitializeHandler()
 
 	//echoServer.Logger.Fatal(echoServer.Start(":8001"))
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		if err := echoServer.Start(":8001"); err != nil {
+		if err := echoServer.Start(":" + strconv.Itoa(conf.GetInt("server.port"))); err != nil {
 			log.Println(err)
 		}
 	}()

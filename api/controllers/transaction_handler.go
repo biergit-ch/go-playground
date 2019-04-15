@@ -11,9 +11,8 @@ func (api *Server) NewTransactionHandler(g *echo.Group) {
 	log.Debug("Initialize Transaction Handler..")
 
 	g.Use(api.authMiddleware)
-	g.GET("/private", api.GetTransactions)
+	g.GET("", api.GetTransactions)
 	g.GET("/:id", api.GetTransaction)
-	log.Debug("Transaction Handler initialized ", g)
 }
 
 // swagger:operation GET /transactions list
@@ -46,6 +45,6 @@ func (api *Server) GetTransaction(c echo.Context) error {
 		log.Error("Failed to convert userId " , c.Param("id"), " to int64")
 	}
 
-	//transaction := api.services.transactionService.GetTransaction(id)
-	return c.JSON(http.StatusOK ,nil)
+	transaction := api.services.transactionService.GetTransaction(id)
+	return c.JSON(http.StatusOK ,transaction)
 }

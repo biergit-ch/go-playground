@@ -24,5 +24,6 @@ go-basicstus
 *.out
 
 *.lock
+biergit
 go-basics
 swagger.json
