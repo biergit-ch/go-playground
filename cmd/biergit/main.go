@@ -19,12 +19,15 @@ import (
 	"context"
 	"flag"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/controllers"
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao/mariadb"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao/mongodb"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/repo"
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/services"
 	"git.skydevelopment.ch/zrh-dev/go-basics/config"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"git.skydevelopment.ch/zrh-dev/go-basics/playground"
 	"github.com/jinzhu/gorm"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"os"
@@ -38,6 +41,9 @@ var persons = []string{"jan", "test1", "test2"}
 
 var conf *viper.Viper
 
+// Datasource Selection (mariadb, mongodb)
+const database = "mariadb"
+
 func main() {
 
 	var wait time.Duration
@@ -45,33 +51,27 @@ func main() {
 	flag.Parse()
 
 	// Setup Logging
-	SetupLogger()
+	setupLogger()
 
 	// Load configuration
 	conf = config.LoadConfig("dev")
 
 	// Test basic concepts
-	BasicPrinciples()
+	basicPrinciples()
 
 	log.Debug("Establish DB Connection")
 
-	// Create new MYSQL Connection
-	db, err := gorm.Open("mysql", conf.GetString("database.user") + ":" + conf.GetString("database.password") + "@tcp(" + conf.GetString("database.host") + ":" + strconv.Itoa(conf.GetInt("database.port")) + ")/" + conf.GetString("database.schema") + "?charset=utf8&parseTime=True")
+	var userRepo repo.UserRepository
+	var groupRepo repo.GroupRepository
+	var transactionRepo repo.TransactionRepository
 
-	if err != nil {
-		log.Fatal("Failed to connect to database", err)
+	// Check which database should be used and initiate it
+	switch database {
+	case "mongodb":
+		userRepo = establishMongoDbConnection()
+	case "mariadb":
+		userRepo, groupRepo, transactionRepo = establishMariaDbConnection()
 	}
-
-	// Enable SQL Query Logs
-	db.LogMode(true)
-
-	// Migrate Database
-	MigrateDB(db)
-
-	// Create Repository
-	userRepo := dao.NewMysqlUserRepository(db)
-	groupRepo := dao.NewMysqlGroupRepository(db)
-	transactionRepo := dao.NewMysqlTransactionRepository(db)
 
 	// Create Service
 	userService := services.NewUserService(userRepo)
@@ -84,8 +84,6 @@ func main() {
 	// Create HTTP Server
 	httpServer := controllers.NewServer(userService, groupService, transactionService, conf)
 	echoServer := httpServer.InitializeHandler()
-
-	//echoServer.Logger.Fatal(echoServer.Start(":8001"))
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
@@ -145,21 +143,65 @@ func addMockData(userService services.UserService, groupService services.GroupSe
 		Amount: 2,
 	}
 
+	log.Debug(bspTrans)
+
 	// Create Services
 	userService.CreateUser(&jan)
-	groupService.CreateGroup(&biergit)
-	transactionService.CreateTransaction(&bspTrans)
+	//groupService.CreateGroup(&biergit)
+	//transactionService.CreateTransaction(&bspTrans)
 }
 
-/**
-Test Basic GO Principles
+func establishMongoDbConnection() repo.UserRepository {
+	// Start Mongo DB Connection
+	client, err := mongo.Connect(context.TODO(), "mongodb://" + conf.GetString("mongodb.host") + ":" + strconv.Itoa(conf.GetInt("mongodb.port")))
 
-- Arrays
-- Slices
-- Loops
+	if err != nil {
+		log.Fatal(err)
+	}
 
- */
-func BasicPrinciples() {
+	// Check the connection
+	err = client.Ping(context.TODO(), nil)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	userCollection := client.Database("biergit").Collection("users")
+	userRepo := mongodb.NewMongoDbUserRepository(userCollection)
+
+	log.Debug("Connected to MongoDB!")
+
+	return userRepo
+}
+
+// Establish a new connection to the configured mariaDB and initiate all repositories
+func establishMariaDbConnection() (repo.UserRepository, repo.GroupRepository, repo.TransactionRepository)  {
+	// Create new MYSQL Connection
+	db, err := gorm.Open("mysql", conf.GetString("mariadb.user") + ":" + conf.GetString("mariadb.password") + "@tcp(" + conf.GetString("mariadb.host") + ":" + strconv.Itoa(conf.GetInt("mariadb.port")) + ")/" + conf.GetString("mariadb.schema") + "?charset=utf8&parseTime=True")
+
+	if err != nil {
+		log.Fatal("Failed to connect to database", err)
+	}
+
+	// Enable SQL Query Logs
+	db.LogMode(true)
+
+	// Migrate Database
+	migrateRelationalDB(db)
+
+	userRepo := mariadb.NewMysqlUserRepository(db)
+	groupRepo := mariadb.NewMysqlGroupRepository(db)
+	transactionRepo := mariadb.NewMysqlTransactionRepository(db)
+
+	return userRepo, groupRepo, transactionRepo
+}
+
+// Test Basic GO Principles
+//
+//- Arrays
+//- Slices
+//- Loops
+func basicPrinciples() {
 
 	log.Debug("Playground")
 
@@ -195,12 +237,13 @@ func BasicPrinciples() {
 	log.Debug("Playground finished")
 }
 
-func SetupLogger() {
+func setupLogger() {
 	log.SetFormatter(&log.TextFormatter {})
 	log.SetLevel(log.DebugLevel)
 }
 
-func MigrateDB(db *gorm.DB) {
+// Migrate all Releational Database Tables
+func migrateRelationalDB(db *gorm.DB) {
 	log.Debug("Migrating Database Schema")
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Group{})

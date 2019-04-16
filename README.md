@@ -76,9 +76,7 @@ Result: time="2019-04-08T23:31:03+02:00" level=debug msg="Save user in repositor
 
 ### Swagger
 
-```
-go get -u github.com/go-swagger/go-swagger/cmd/swagger
-```
+`dep ensure -add github.com/go-swagger/go-swagger/cmd/swagger`
 
 Use this commenting style to be scanned by swagger generator
 ```

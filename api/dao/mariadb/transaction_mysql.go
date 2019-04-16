@@ -1,6 +1,7 @@
-package dao
+package mariadb
 
 import (
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/repo"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -10,7 +11,7 @@ type transactionRepository struct {
 	db *gorm.DB
 }
 
-func NewMysqlTransactionRepository(db *gorm.DB) TransactionRepository {
+func NewMysqlTransactionRepository(db *gorm.DB) repo.TransactionRepository {
 	return &transactionRepository{
 		db: db,
 	}

@@ -1,17 +1,19 @@
-package dao
+package mariadb
 
 import (
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/repo"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	log "github.com/sirupsen/logrus"
+	"strconv"
 )
 
 type userRepository struct {
 	db *gorm.DB
 }
 
-func NewMysqlUserRepository(db *gorm.DB) UserRepository {
+func NewMysqlUserRepository(db *gorm.DB) repo.UserRepository {
 	return &userRepository{
 		db: db,
 	}
@@ -25,13 +27,21 @@ func (r *userRepository) FindAll() ([]*models.User, error) {
 	return users, r.db.Error
 }
 
-func (r *userRepository) FindOne(id int) ( []*models.User, error) {
+func (r *userRepository) FindOne(id string) (*models.User, error) {
 	log.Debug("Find user with id ", id, " in mysql database")
+
+	// convert string to int
+	var userId, _ = strconv.Atoi(id)
+
 	var users []*models.User
 
-	r.db.First(&users, id)
+	r.db.First(&users, userId)
 
-	return users, r.db.Error
+	if len(users) > 0 {
+		return users[0], nil
+	} else {
+		return nil, r.db.Error
+	}
 }
 
 func (r *userRepository) Save(user *models.User) *models.User {
