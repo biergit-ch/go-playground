@@ -24,6 +24,11 @@
 #   go-tests = true
 #   unused-packages = true
 
+[metadata.heroku]
+  root-package = "git.skydevelopment.ch/zrh-dev/go-basics"
+  go-version = "go1.12.1"
+  install = [ "./cmd/..."]
+  ensure = "true"
 
 [[constraint]]
   branch = "master"
