@@ -2,4 +2,4 @@ build:
   languages:
     - go
 run:
-  web: bin/go-basics
+  web: go-basics
