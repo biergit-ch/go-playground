@@ -1,7 +1,7 @@
 package services
 
 import (
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/repo"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -13,17 +13,17 @@ type TransactionService interface {
 }
 
 type transactionService struct {
-	repo dao.TransactionRepository
+	repo repo.TransactionRepository
 }
 
-func NewTransactionService(r dao.TransactionRepository) TransactionService {
+func NewTransactionService(r repo.TransactionRepository) TransactionService {
 	return &transactionService{
 		repo: r,
 	}
 }
 
 func (s *transactionService) GetAllTransactions() []*models.Transaction {
-
+	log.Debug("Try to query the repo for the transactions" )
 	transactions, err := s.repo.FindAll()
 	if err != nil {
 		log.Fatal("Failed to get all users from repo")

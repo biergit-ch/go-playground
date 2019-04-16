@@ -6,12 +6,13 @@ import (
 )
 
 type Config struct {
-	DB database `mapstructure:"database"`
+	MariaDB mariadb `mapstructure:"mariadb"`
+	MontoDB mongodb `mapstructure:"mongodb"`
 	Server server `mapstructure:"server"`
 	Auth auth0 `mapstructure:"auth0"`
 }
 
-type database struct {
+type mariadb struct {
 	Host   string
 	Port     int
 	User     string
@@ -30,6 +31,10 @@ type auth0 struct {
 	Jwks string
 }
 
+type mongodb struct {
+
+}
+
 func LoadConfig(env string) *viper.Viper {
 
 	var confFile string
@@ -45,11 +50,10 @@ func LoadConfig(env string) *viper.Viper {
 		confFile = "config.dev"
 	}
 
+	// Create new Viper Config Struct
 	v := viper.New()
 	v.SetConfigName(confFile) // name of config file (without extension)
 	v.AddConfigPath("config")
-
-	v.SetEnvPrefix("BG")
 
 	v.BindEnv("auth0.audience", "AUTH0_AUDIENCE")
 	v.BindEnv("auth0.issuer","AUTH0_ISSUER")

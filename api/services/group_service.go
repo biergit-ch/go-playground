@@ -1,7 +1,7 @@
 package services
 
 import (
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/repo"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -12,10 +12,10 @@ type GroupService interface {
 }
 
 type groupService struct {
-	repo dao.GroupRepository
+	repo repo.GroupRepository
 }
 
-func NewGroupService(r dao.GroupRepository) GroupService {
+func NewGroupService(r repo.GroupRepository) GroupService {
 	return &groupService{
 		repo: r,
 	}

@@ -24,7 +24,6 @@ func (api *Server) GetUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
-
 // swagger:operation GET /users/{userId} get user by id
 // ---
 // summary: Get one user by its ID
@@ -36,36 +35,22 @@ func (api *Server) GetUsers(c echo.Context) error {
 //   type: int
 //   required: true
 func (api *Server) GetUser(c echo.Context) error {
-
-	userId, _ := strconv.Atoi(c.Param("id"))
-
-	users := api.services.userService.GetUserById(userId)
-
-	if len(users) > 0 {
-		return c.JSON(http.StatusOK, users[0])
-	} else {
-		return c.NoContent(http.StatusNotFound)
-	}
+	userId := c.Param("id")
+	user := api.services.userService.GetUserById(userId)
+	return c.JSON(http.StatusOK, user)
 }
-
 
 // swagger:operation POST /users create new user
 // ---
 // summary: Create a new User
 func (api *Server) CreateUser(c echo.Context) error {
-
 	u := &models.User{}
-
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-
 	api.services.userService.CreateUser(u)
-
 	return c.JSON(http.StatusCreated, u)
-
 }
-
 
 // swagger:operation PUT /users/{userId} update user by id
 // ---
@@ -98,12 +83,12 @@ func (api *Server) UpdateUser(c echo.Context) error {
 //   description: id of user
 //   type: int
 //   required: true
-func  (api *Server) DeleteUser(c echo.Context) error {
+func (api *Server) DeleteUser(c echo.Context) error {
 
 	id, convErr := strconv.Atoi(c.Param("id"))
 
 	if convErr != nil {
-		log.Error("Failed to convert userId " , c.Param("id"), " to int64")
+		log.Error("Failed to convert userId ", c.Param("id"), " to int64")
 	}
 
 	log.Debug("Try to delete user with id ", id, " from repo")

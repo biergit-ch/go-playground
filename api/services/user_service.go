@@ -1,24 +1,24 @@
 package services
 
 import (
-	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao"
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/repo"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	log "github.com/sirupsen/logrus"
 )
 
 type UserService interface {
 	GetAllUsers() []*models.User
-	GetUserById(id int) []*models.User
+	GetUserById(id string) *models.User
 	CreateUser(user *models.User) *models.User
 	UpdateUser(user *models.User) *models.User
 	DeleteUser(id int) error
 }
 
 type userService struct {
-	repo dao.UserRepository
+	repo repo.UserRepository
 }
 
-func NewUserService(r dao.UserRepository) UserService {
+func NewUserService(r repo.UserRepository) UserService {
 	return &userService{
 		repo: r,
 	}
@@ -33,14 +33,14 @@ func (s *userService) GetAllUsers() []*models.User {
 	return users
 }
 
-func (s *userService) GetUserById(id int) []*models.User {
+func (s *userService) GetUserById(id string) *models.User {
 	log.Debug("Get User from Repo with id ", id)
-	users, err := s.repo.FindOne(id)
+	user, err := s.repo.FindOne(id)
 	if err != nil {
 		log.Fatal("Failed to get user from repo")
 	}
-	log.Debug(users)
-	return users
+	log.Debug(user)
+	return user
 }
 
 func (s *userService) CreateUser(user *models.User) *models.User {
