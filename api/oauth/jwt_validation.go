@@ -1,8 +1,11 @@
 package oauth
 
 import (
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
+	"fmt"
 	"git.skydevelopment.ch/zrh-dev/go-basics/config"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
@@ -26,8 +29,44 @@ type JSONWebKeys struct {
 	X5c []string `json:"x5c"`
 }
 
-func NewJwtMiddleware(c *config.Config) *jwtmiddleware.JWTMiddleware {
+// Extracted from https://github.com/square/go-jose/blob/master/utils.go
+// LoadPublicKey loads a public key from PEM/DER-encoded data.
+// You can download the Auth0 pem file from `applications -> your_app -> scroll down -> Advanced Settings -> certificates -> download`
+func LoadPublicKey(data []byte) (interface{}, error) {
+	input := data
 
+	block, _ := pem.Decode(data)
+	if block != nil {
+		input = block.Bytes
+	}
+
+	// Try to load SubjectPublicKeyInfo
+	pub, err0 := x509.ParsePKIXPublicKey(input)
+	if err0 == nil {
+		return pub, nil
+	}
+
+	cert, err1 := x509.ParseCertificate(input)
+	if err1 == nil {
+		return cert.PublicKey, nil
+	}
+
+	return nil, fmt.Errorf("square/go-jose: parse error, got '%s' and '%s'", err0, err1)
+}
+
+func NewJWTmiddleware() *jwtmiddleware.JWTMiddleware {
+
+	var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return "test", nil
+		},
+		SigningMethod: jwt.SigningMethodHS256,
+	})
+
+	return jwtMiddleware
+}
+
+func NewJwtMiddleware(c *config.Config) *jwtmiddleware.JWTMiddleware {
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options {
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			// Verify 'aud' claim

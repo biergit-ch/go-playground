@@ -1,6 +1,6 @@
 // GO REST API Demo
 //
-// This is a sample implementation with golang. This project will be used for learnings.
+// This is a sample implementation with golang. This project will be used for learning's.
 //
 //     Schemes: http, https
 //     Host: localhost:8000
@@ -26,7 +26,7 @@ import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/playground"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
-	"net/http"
+	"github.com/spf13/viper"
 	"os"
 	"os/signal"
 	"strconv"
@@ -36,7 +36,7 @@ import (
 // define array and initialize it with values
 var persons = []string{"jan", "test1", "test2"}
 
-var conf *config.Config
+var conf *viper.Viper
 
 func main() {
 
@@ -56,12 +56,14 @@ func main() {
 	log.Debug("Establish DB Connection")
 
 	// Create new MYSQL Connection
-	db, err := gorm.Open("mysql", conf.DB.User + ":" + conf.DB.Password + "@tcp(" + conf.DB.Host + ":" + strconv.Itoa(conf.DB.Port) + ")/" + conf.DB.Schema + "?charset=utf8&parseTime=True")
-	db.LogMode(true)
+	db, err := gorm.Open("mysql", conf.GetString("database.user") + ":" + conf.GetString("database.password") + "@tcp(" + conf.GetString("database.host") + ":" + strconv.Itoa(conf.GetInt("database.port")) + ")/" + conf.GetString("database.schema") + "?charset=utf8&parseTime=True")
 
 	if err != nil {
-		log.Debug("Failed to connect to database", err)
+		log.Fatal("Failed to connect to database", err)
 	}
+
+	// Enable SQL Query Logs
+	db.LogMode(true)
 
 	// Migrate Database
 	MigrateDB(db)
@@ -80,21 +82,14 @@ func main() {
 	addMockData(userService, groupService, transactionService)
 
 	// Create HTTP Server
-	httpServer := controllers.NewHttpServer(userService, groupService, transactionService, conf)
-	router := httpServer.InitializeHandler()
+	httpServer := controllers.NewServer(userService, groupService, transactionService, conf)
+	echoServer := httpServer.InitializeHandler()
 
-	srv := &http.Server{
-		Addr:         conf.Server.Host + ":" + strconv.Itoa(conf.Server.Port),
-		// Good practice to set timeouts to avoid Slowloris attacks.
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
-		Handler: router, // Pass our instance of gorilla/mux in.
-	}
+	//echoServer.Logger.Fatal(echoServer.Start(":8001"))
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		if err := srv.ListenAndServe(); err != nil {
+		if err := echoServer.Start(":" + strconv.Itoa(conf.GetInt("server.port"))); err != nil {
 			log.Println(err)
 		}
 	}()
@@ -114,7 +109,7 @@ func main() {
 
 	// Doesn't block if no connections, but will otherwise wait
 	// until the timeout deadline.
-	srv.Shutdown(ctx)
+	echoServer.Shutdown(ctx)
 
 	log.Println("shutting down")
 	os.Exit(0)

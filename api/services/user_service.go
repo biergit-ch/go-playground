@@ -8,10 +8,10 @@ import (
 
 type UserService interface {
 	GetAllUsers() []*models.User
-	GetUserById(id int64) []*models.User
+	GetUserById(id int) []*models.User
 	CreateUser(user *models.User) *models.User
 	UpdateUser(user *models.User) *models.User
-	DeleteUser(id int64) error
+	DeleteUser(id int) error
 }
 
 type userService struct {
@@ -33,9 +33,9 @@ func (s *userService) GetAllUsers() []*models.User {
 	return users
 }
 
-func (s *userService) GetUserById(id int64) []*models.User {
+func (s *userService) GetUserById(id int) []*models.User {
 	log.Debug("Get User from Repo with id ", id)
-	users, err := s.repo.Find(id)
+	users, err := s.repo.FindOne(id)
 	if err != nil {
 		log.Fatal("Failed to get user from repo")
 	}
@@ -60,7 +60,7 @@ func (s *userService) UpdateUser(user *models.User) *models.User {
 	return user
 }
 
-func (s *userService) DeleteUser(id int64) error {
+func (s *userService) DeleteUser(id int) error {
 
 	log.Debug("Delete User from Repo with id ", id)
 

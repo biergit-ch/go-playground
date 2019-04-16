@@ -1,28 +1,24 @@
 package controllers
 
 import (
-	"encoding/json"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-func (s *Services) NewGroupHandler(router *mux.Router) {
+func (api *Server) NewGroupHandler(g *echo.Group) {
 	log.Debug("Initialize Group Handler..")
-	router.Handle("/groups", s.GetGroups()).Methods("GET")
+
+	g.GET("", api.GetGroups)
 }
 
-func (s *Services) GetGroups() http.Handler {
-	log.Debug("Initialize GET:Groups Endpoint..")
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// swagger:operation GET /groups list
+// ---
+// summary: List all Groups stored in repo
+// description: When there are no groups, it will return an empty array
+func  (api *Server) GetGroups(c echo.Context) error {
+	log.Debug("Get all Groups")
 
-		if r.Method != "GET" {
-			http.Error(w, http.StatusText(405), 405)
-			return
-		}
-
-		groups := s.groupService.GetAllGroups()
-
-		json.NewEncoder(w).Encode(groups)
-	})
+	groups := api.services.groupService.GetAllGroups()
+	return c.JSON(http.StatusOK ,groups)
 }

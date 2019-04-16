@@ -11,8 +11,8 @@ type UserRepository interface {
 	FindAll() ([]*models.User, error)
 	Save(user *models.User) *models.User
 	Update(user *models.User) (*models.User, error)
-	Delete(id int64) error
-	Find(id int64) ([]*models.User, error)
+	Delete(id int) error
+	FindOne(id int) ([]*models.User, error)
 }
 
 type userRepository struct {
@@ -33,7 +33,7 @@ func (r *userRepository) FindAll() ([]*models.User, error) {
 	return users, r.db.Error
 }
 
-func (r *userRepository) Find(id int64) ( []*models.User, error) {
+func (r *userRepository) FindOne(id int) ( []*models.User, error) {
 	log.Debug("Find user with id ", id, " in mysql database")
 	var users []*models.User
 
@@ -54,7 +54,7 @@ func (r *userRepository) Update(user *models.User) (*models.User, error) {
 	return user, r.db.Error
 }
 
-func (r *userRepository) Delete(id int64) error {
+func (r *userRepository) Delete(id int) error {
 
 	log.WithFields(log.Fields{"user_id": id}).Debug("delete user from mysql db")
 

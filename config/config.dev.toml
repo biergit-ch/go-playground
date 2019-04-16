@@ -10,8 +10,3 @@ schema = "go"
 [server]
 host = "0.0.0.0"
 port = 8000
-
-[auth0]
-audience = "https://biergit.ch/api"
-issuer = "https://biergit.eu.auth0.com/"
-jwks = "https://biergit.eu.auth0.com/.well-known/jwks.json"

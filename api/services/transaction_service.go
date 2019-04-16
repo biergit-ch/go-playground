@@ -8,6 +8,7 @@ import (
 
 type TransactionService interface {
 	GetAllTransactions() []*models.Transaction
+	GetTransaction(id int) *models.Transaction
 	CreateTransaction(user *models.Transaction)
 }
 
@@ -28,6 +29,15 @@ func (s *transactionService) GetAllTransactions() []*models.Transaction {
 		log.Fatal("Failed to get all users from repo")
 	}
 	return transactions
+}
+
+func (s *transactionService) GetTransaction(id int) *models.Transaction {
+
+	transaction, err := s.repo.FindOne(id)
+	if err != nil {
+		log.Fatal("Failed to get all users from repo")
+	}
+	return transaction
 }
 
 func (s *transactionService) CreateTransaction(t *models.Transaction) {

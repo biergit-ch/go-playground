@@ -1,30 +1,50 @@
 package controllers
 
 import (
-	"encoding/json"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
-
-func (s *Services) NewTransactionHandler(router *mux.Router) {
+func (api *Server) NewTransactionHandler(g *echo.Group) {
 	log.Debug("Initialize Transaction Handler..")
-	router.Handle("/transactions", s.GetTransactions()).Methods("GET")
-	router.Handle("/transactions", s.GetTransactions()).Methods("GET")
+
+	g.Use(api.authMiddleware)
+	g.GET("", api.GetTransactions)
+	g.GET("/:id", api.GetTransaction)
 }
 
-func (s *Services) GetTransactions() http.Handler {
-	log.Debug("Initialize GET:Transaction Endpoint..")
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// swagger:operation GET /transactions list
+// ---
+// summary: List all Transactions stored in repo
+// description: When there are no transactions, it will return an empty array
+func (api *Server) GetTransactions(c echo.Context) error {
+	log.Debug("Get Transactions")
+	transactions := api.services.transactionService.GetAllTransactions()
+	return c.JSON(http.StatusOK ,transactions)
+}
 
-		if r.Method != "GET" {
-			http.Error(w, http.StatusText(405), 405)
-			return
-		}
+// swagger:operation GET /transactions/{transactionId} get one transaction
+// ---
+// summary: List all Transactions stored in repo
+// description: When there are no groups, it will return an empty array
+// parameters:
+// - name: transactionId
+//   in: path
+//   description: transaction id
+//   type: int
+//   required: true
+func (api *Server) GetTransaction(c echo.Context) error {
+	log.Debug("Get Transaction")
 
-		transactions := s.transactionService.GetAllTransactions()
+	id, err := strconv.Atoi(c.Param("id"))
+	log.Debug("User id is ", id)
 
-		json.NewEncoder(w).Encode(transactions)
-	})
+	if err != nil {
+		log.Error("Failed to convert userId " , c.Param("id"), " to int64")
+	}
+
+	transaction := api.services.transactionService.GetTransaction(id)
+	return c.JSON(http.StatusOK ,transaction)
 }
