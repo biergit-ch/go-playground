@@ -1,0 +1,12 @@
+{
+  "name": "Biergit GO Backend Test",
+  "description": "Sample Project to test the abilities of the golang for this project",
+  "keywords": [
+    "go-basics",
+    "go",
+    "sample",
+    "example"
+  ],
+  "website": "https://zrhdev.ch/",
+  "repository": "https://github.com/biergit-ch/go-playground.git"
+}
