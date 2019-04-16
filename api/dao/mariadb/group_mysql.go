@@ -1,21 +1,17 @@
 package dao
 
 import (
+	"git.skydevelopment.ch/zrh-dev/go-basics/api/dao/interface"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-type GroupRepository interface {
-	FindAll() ([]*models.Group, error)
-	Save(user *models.Group)
-}
-
 type groupRepository struct {
 	db *gorm.DB
 }
 
-func NewMysqlGroupRepository(db *gorm.DB) GroupRepository {
+func NewMysqlGroupRepository(db *gorm.DB) _interface.GroupRepository {
 	return &groupRepository{
 		db: db,
 	}

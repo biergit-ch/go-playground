@@ -7,14 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type UserRepository interface {
-	FindAll() ([]*models.User, error)
-	Save(user *models.User) *models.User
-	Update(user *models.User) (*models.User, error)
-	Delete(id int) error
-	FindOne(id int) ([]*models.User, error)
-}
-
 type userRepository struct {
 	db *gorm.DB
 }

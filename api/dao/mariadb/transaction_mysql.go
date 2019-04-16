@@ -6,12 +6,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-type TransactionRepository interface {
-	FindAll() ([]*models.Transaction, error)
-	FindOne(id int) (*models.Transaction, error)
-	Save(user *models.Transaction)
-}
-
 type transactionRepository struct {
 	db *gorm.DB
 }
