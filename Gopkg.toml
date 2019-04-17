@@ -63,5 +63,5 @@
   version = "0.3.0"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/xo/dburl"
+  name = "github.com/cloudfoundry-community/go-cfenv"
+  version = "1.18.0"

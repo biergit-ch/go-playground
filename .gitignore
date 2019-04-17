@@ -25,5 +25,6 @@ go-basicstus
 
 *.lock
 biergit
+bin
 go-basics
 swagger.json

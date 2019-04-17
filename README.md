@@ -38,12 +38,22 @@ $ go build && ./go-basics
 * http://localhost:8000/transactions `protected`
 
 ### Build & Deploy
-Deploy to heroku cloud
+
+### Heroku Cloud
+Deploy to heroku cloud `https://biergit.herokuapp.com`
 ```
+$ make
 $ make build
-$ make deploy
+$ cf push -f manifest.yml
 ```
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
+### Pivotal Cloud
+Deploy to pivotal cloud `https://biergit-api.cfapps.io`
+```
+$ make
+$ make deploy
+```
 
 ### Layout
 
@@ -177,6 +187,7 @@ __Persistence__
 
 * https://www.reddit.com/r/golang/comments/8j3219/anyone_using_gorm_in_production_is_it_slow/
 * http://doc.gorm.io
+* https://godoc.org/github.com/knq/dburl
 * https://www.alexedwards.net/blog/organising-database-access
 
 __Networking__
@@ -196,6 +207,10 @@ __Error Handling__
 __Configuration__
 
 * http://goinbigdata.com/persisting-application-configuration-in-golang/
+
+__Cloud Foundry__
+
+* https://github.com/cloudfoundry-community/go-cfenv
 
 __Docs__
 
