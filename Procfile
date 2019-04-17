@@ -1,1 +1,1 @@
-web: /bin/go-basics
+web: bin/biergit-api
