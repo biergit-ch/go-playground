@@ -3,6 +3,7 @@ package config
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"os"
 )
 
 type Config struct {
@@ -58,6 +59,16 @@ func LoadConfig(env string) *viper.Viper {
 	v.BindEnv("auth0.audience", "AUTH0_AUDIENCE")
 	v.BindEnv("auth0.issuer","AUTH0_ISSUER")
 	v.BindEnv("auth0.jwks", "AUTH0_JWKS")
+	v.BindEnv("server.port", "PORT")
+
+	trans := v.BindEnv("mariadb.jdbc", "JAWSDB_MARIA_URL")
+
+	if trans != nil {
+		log.Error(trans)
+	}
+
+	log.Debug("Env", v.GetString("mariadb.jdbc"))
+	log.Debug("JDBC Env: ", os.Getenv("JAWSDB_MARIA_URL"))
 
 	err := v.ReadInConfig() // Find and read the config file
 	if err != nil { // Handle errors reading the config file

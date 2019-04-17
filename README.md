@@ -37,6 +37,14 @@ $ go build && ./go-basics
 * http://localhost:8000/groups
 * http://localhost:8000/transactions `protected`
 
+### Build & Deploy
+Deploy to heroku cloud
+```
+$ make build
+$ make deploy
+```
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 ### Layout
 
 ```

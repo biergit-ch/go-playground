@@ -24,6 +24,11 @@
 #   go-tests = true
 #   unused-packages = true
 
+[metadata.heroku]
+  root-package = "git.skydevelopment.ch/zrh-dev/go-basics"
+  go-version = "go1.12"
+  install = ["./cmd/..."]
+  ensure = "true"
 
 [[constraint]]
   branch = "master"
@@ -56,3 +61,7 @@
 [[constraint]]
   name = "github.com/mongodb/mongo-go-driver"
   version = "0.3.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/xo/dburl"
