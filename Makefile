@@ -1,6 +1,6 @@
 GO_BUILD_ENV := CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 DOCKER_BUILD=$(shell pwd)/bin
-DOCKER_CMD=$(DOCKER_BUILD)/go-basics
+DOCKER_CMD=$(DOCKER_BUILD)/biergit-api
 
 $(DOCKER_CMD): clean
 	mkdir -p $(DOCKER_BUILD)

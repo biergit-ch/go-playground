@@ -26,10 +26,12 @@ import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/config"
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
 	"git.skydevelopment.ch/zrh-dev/go-basics/playground"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"net/url"
 	"os"
 	"os/signal"
 	"strconv"
@@ -147,8 +149,8 @@ func addMockData(userService services.UserService, groupService services.GroupSe
 
 	// Create Services
 	userService.CreateUser(&jan)
-	//groupService.CreateGroup(&biergit)
-	//transactionService.CreateTransaction(&bspTrans)
+	groupService.CreateGroup(&biergit)
+	transactionService.CreateTransaction(&bspTrans)
 }
 
 func establishMongoDbConnection() repo.UserRepository {
@@ -176,11 +178,37 @@ func establishMongoDbConnection() repo.UserRepository {
 
 // Establish a new connection to the configured mariaDB and initiate all repositories
 func establishMariaDbConnection() (repo.UserRepository, repo.GroupRepository, repo.TransactionRepository)  {
-	// Create new MYSQL Connection
-	db, err := gorm.Open("mysql", conf.GetString("mariadb.user") + ":" + conf.GetString("mariadb.password") + "@tcp(" + conf.GetString("mariadb.host") + ":" + strconv.Itoa(conf.GetInt("mariadb.port")) + ")/" + conf.GetString("mariadb.schema") + "?charset=utf8&parseTime=True")
+
+	var db *gorm.DB
+	var err error
+
+	// Check if uri is configured
+	dsn := conf.GetString("mariadb.jdbc")
+
+	log.Debug("DSN: ", dsn)
+
+	if dsn != "" {
+		// Parse the DSN String
+		dbUrl, _ := url.Parse(dsn)
+		log.Debug("QueryString: ", dbUrl.RawQuery)
+
+		// Create new MYSQL Connection
+		db, err = gorm.Open(dbUrl.Scheme, dbUrl.User.String() + "@tcp(" +
+			dbUrl.Host + ")" +
+			dbUrl.Path + "?")
+		// TODO: Check unknown system variable of reconnect flag
+
+	} else {
+		// Create new MYSQL Connection based on configuration file
+		db, err = gorm.Open("mysql", conf.GetString("mariadb.user") + ":" +
+			conf.GetString("mariadb.password") + "@tcp(" +
+			conf.GetString("mariadb.host") + ":" +
+			strconv.Itoa(conf.GetInt("mariadb.port")) + ")/" +
+			conf.GetString("mariadb.schema") + "?charset=utf8&parseTime=True")
+	}
 
 	if err != nil {
-		log.Fatal("Failed to connect to database", err)
+		log.Fatal("Failed to connect to database: ", err)
 	}
 
 	// Enable SQL Query Logs

@@ -1,0 +1,10 @@
+---
+applications:
+  - name: biergit-api
+    memory: 64M
+    buildpacks:
+      - binary_buildpack
+    services:
+      - biergit-db
+    env:
+      GOVERSION: go1.12
