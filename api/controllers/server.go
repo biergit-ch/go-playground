@@ -3,7 +3,6 @@ package controllers
 import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/api/services"
 	"github.com/auth0-community/auth0"
-	"github.com/auth0/go-jwt-middleware"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	log "github.com/sirupsen/logrus"
@@ -21,7 +20,6 @@ type Services struct {
 type Server struct {
 	echo *echo.Echo
 	services Services
-	jwt *jwtmiddleware.JWTMiddleware
 	conf *viper.Viper
 }
 

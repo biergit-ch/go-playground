@@ -1,4 +1,4 @@
-package controllers
+package rest
 
 import (
 	"git.skydevelopment.ch/zrh-dev/go-basics/models"
