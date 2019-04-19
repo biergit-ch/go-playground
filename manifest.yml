@@ -6,5 +6,6 @@ applications:
       - binary_buildpack
     services:
       - biergit-db
+      - biergit-mongo
     env:
       GOVERSION: go1.12

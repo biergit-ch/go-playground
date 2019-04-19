@@ -4,5 +4,5 @@ package models
 // swagger:model Group
 type Group struct {
 	Base
-	GroupName string
+	GroupName string  `json:"group_name"`
 }

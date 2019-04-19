@@ -64,13 +64,13 @@ func LoadConfig(env string) *viper.Viper {
 	v.BindEnv("cloud", "VCAP_SERVICES")
 
 	// Configure Database in Heroku
-	trans := v.BindEnv("mariadb.jdbc", "JAWSDB_MARIA_URL")
+	trans := v.BindEnv("mariadb.dsn", "JAWSDB_MARIA_URL")
 	v.BindEnv("vcapp", "VCAP_SERVICES")
 
 	log.Debug("CF Services: ", v.GetString("vcapp"))
 
 	// Check if Cloud Foundry is used
-	if v.GetString("mariadb.jdbc") == "" {
+	if v.GetString("mariadb.dsn") == "" {
 
 		log.Debug("This application does not run on heroku, try read cloud foundry env")
 
@@ -79,19 +79,35 @@ func LoadConfig(env string) *viper.Viper {
 
 		log.Debug("CF ENV: ", appEnv)
 
-		// Search Database Config
+		// Search MariaDB Database Config
 		dbService, err := appEnv.Services.WithName("biergit-db")
 
 		if err != nil {
 			log.Error("Failed to read db Service from cf env")
 		} else {
-			log.Info("CF DB Servcie: ", dbService)
+			log.Info("CF RDBMS: ", dbService)
 
 			// Get DB URI
 			uri, ok := dbService.CredentialString("uri")
 
 			if ok {
-				v.Set("mariadb.jdbc", uri)
+				v.Set("mariadb.dsn", uri)
+			}
+		}
+
+		// Search MongoDB Database Config
+		mongoDb, err := appEnv.Services.WithName("mongo-db")
+
+		if err != nil {
+			log.Error("Failed to read db Service from cf env")
+		} else {
+			log.Info("CF MONGO: ", mongoDb)
+
+			// Get DB URI
+			uri, ok := mongoDb.CredentialString("uri")
+
+			if ok {
+				v.Set("mongo.dsn", uri)
 			}
 		}
 	}
@@ -100,7 +116,7 @@ func LoadConfig(env string) *viper.Viper {
 		log.Error(trans)
 	}
 
-	log.Debug("Configured MariaDB DSN: ", v.GetString("mariadb.jdbc"))
+	log.Debug("Configured MariaDB DSN: ", v.GetString("mariadb.dsn"))
 
 	err := v.ReadInConfig() // Find and read the config file
 	if err != nil { // Handle errors reading the config file
